@@ -1,4 +1,4 @@
-# Welcome to SpaceX
+# Welcome to Checkout App
 
 ## Available Scripts
 
