@@ -110,7 +110,7 @@ const Layout = () => {
     const handleBlur = (index) => {
         let product = products[index];
         setTotal();
-        if(product.price <= (product.minPriceCents/100) || product.price >= (product.maxPriceCents/100)){
+        if(product.price < (product.minPriceCents/100) || product.price > (product.maxPriceCents/100)){
             setError({...error,price:true,index:index});
         }else {
             setError({...initialError});
