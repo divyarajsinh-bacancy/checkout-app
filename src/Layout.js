@@ -210,10 +210,14 @@ const Layout = () => {
                                 </Typography>
                                 <Grid container className={classes.container}>
                                     <Grid item sm={8}>
-                                        SubTotal
+                                        <Typography variant="h6" component="p">
+                                            SubTotal
+                                        </Typography>
                                     </Grid>
                                     <Grid item sm={3} className={classes.right}>
-                                        {`$ ${checkout.subtotal.toFixed(2)}`}
+                                        <Typography variant="h6" component="p">
+                                            {`$ ${checkout.subtotal.toFixed(2)}`}
+                                        </Typography>
                                     </Grid>
                                     {products &&
                                         products.map((product) => {
@@ -231,16 +235,24 @@ const Layout = () => {
                                         );
                                         })}
                                     <Grid item sm={8}>
-                                        {`Discount Card (${card ? card.number : ''})`}    
+                                        <Typography variant="h6" component="p">
+                                            {`Discount Card (${card ? card.number : ''})`}    
+                                        </Typography>
                                     </Grid>
                                     <Grid item sm={3} className={classes.right}>
-                                        {`- $ ${(checkout.subtotal - checkout.total).toFixed(2)}`}    
+                                        <Typography variant="h6" component="p">
+                                            {`- $ ${(checkout.subtotal - checkout.total).toFixed(2)}`}    
+                                        </Typography>
                                     </Grid>    
                                     <Grid item sm={8}>
-                                        Total
+                                        <Typography variant="h6" component="p">
+                                            Total
+                                        </Typography>
                                     </Grid>
                                     <Grid item sm={3} className={classes.right}>
-                                        {`$ ${checkout.total.toFixed(2)}`}
+                                        <Typography variant="h6" component="p">
+                                            {`$ ${checkout.total.toFixed(2)}`}
+                                        </Typography>
                                     </Grid>
                                 </Grid>
                                 <Button variant="contained" color="primary" className={classes.checkoutBtn}>
