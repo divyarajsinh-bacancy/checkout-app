@@ -95,7 +95,10 @@ const Layout = () => {
         let product = products[index];
         switch (type) {
             case ITEM:
-                product = card.allowedProducts.find(e => e.id === value);
+                product = card.allowedProducts.find(e => { 
+                    return (e.id === value ? e.disabled=true : '');
+                });
+                setCard({...card});
                 product.quantity = 1;
                 product.price = '';
                 setValue(product,index);
@@ -181,7 +184,7 @@ const Layout = () => {
                                                     <InputLabel id={`select-product-${key}`}>Product</InputLabel>
                                                     <Select labelId={`select-product-${key}`} id={`product-${key}`} value={product.id} onChange={(e) => handleProduct(ITEM,e.target.value,key)}>
                                                         {card.allowedProducts.map((item,i) => 
-                                                            <MenuItem value={item.id} key={`menuitem-${i}`}>{item.name}</MenuItem>
+                                                            <MenuItem value={item.id} key={`menuitem-${i}`} disabled={item.disabled ? 'disabled' : ''}>{item.name}</MenuItem>
                                                         )}
                                                     </Select>
                                                 </FormControl>
@@ -225,7 +228,7 @@ const Layout = () => {
                                             product.discountCentsPerLitre && (
                                             <>
                                                 <Grid item sm={8}>
-                                                {product.name}{`($ ${product.price}/L)`}
+                                                {product.name}{`($ ${product.price ? product.price : 0}/L)`}
                                                 </Grid>
                                                 <Grid item sm={3} className={classes.right}>
                                                 {`- $ ${(product.discountCentsPerLitre / 100 * product.quantity).toFixed(2)}`}
