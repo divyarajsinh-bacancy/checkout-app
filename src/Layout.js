@@ -194,7 +194,7 @@ const Layout = () => {
                                                 {error.price && (error.index === key ? <FormHelperText className={classes.error}>{`Unit Price should be between ${product.minPriceCents/100} and ${product.maxPriceCents/100}`}</FormHelperText> : '')}
                                             </Grid>
                                             <Grid item md={1} xs={12} sm={12} className={classes.iconContainer}>
-                                                <RemoveIcon className={classes.removeIcon} onClick={() => addDeleteProduct(DELETE,key)} />
+                                                { key !== 0 && <RemoveIcon className={classes.removeIcon} onClick={() => addDeleteProduct(DELETE,key)} />}
                                             </Grid>
                                         </Grid> )
                                     })}
