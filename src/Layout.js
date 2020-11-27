@@ -83,7 +83,7 @@ const Layout = () => {
     const handleCardNumber = e => {
         const value = +e.target.value;
         const result = db.find(ele => ele.number === value);
-        if(result){
+        if(result && result.balance > 0){
             setCard(result);
             setRender(true);
         }else{
@@ -231,7 +231,7 @@ const Layout = () => {
                                         );
                                         })}
                                     <Grid item sm={8}>
-                                        {`Discount Card (${card.number})`}    
+                                        {`Discount Card (${card ? card.number : ''})`}    
                                     </Grid>
                                     <Grid item sm={3} className={classes.right}>
                                         {`- $ ${(checkout.subtotal - checkout.total).toFixed(2)}`}    
