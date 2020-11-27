@@ -213,7 +213,7 @@ const Layout = () => {
                                         SubTotal
                                     </Grid>
                                     <Grid item sm={3} className={classes.right}>
-                                        {`$ ${checkout.subtotal}`}
+                                        {`$ ${checkout.subtotal.toFixed(2)}`}
                                     </Grid>
                                     {products &&
                                         products.map((product) => {
@@ -221,20 +221,26 @@ const Layout = () => {
                                             product.discountCentsPerLitre && (
                                             <>
                                                 <Grid item sm={8}>
-                                                {product.name}
+                                                {product.name}{`($ ${product.price}/L)`}
                                                 </Grid>
                                                 <Grid item sm={3} className={classes.right}>
-                                                {`- $ ${product.discountCentsPerLitre / 100}`}
+                                                {`- $ ${(product.discountCentsPerLitre / 100 * product.quantity).toFixed(2)}`}
                                                 </Grid>
                                             </>
                                             )
                                         );
                                         })}
                                     <Grid item sm={8}>
-                                        Total to Tendet
+                                        {`Discount Card (${card.number})`}    
                                     </Grid>
                                     <Grid item sm={3} className={classes.right}>
-                                        {`$ ${checkout.total}`}
+                                        {`- $ ${(checkout.subtotal - checkout.total).toFixed(2)}`}    
+                                    </Grid>    
+                                    <Grid item sm={8}>
+                                        Total
+                                    </Grid>
+                                    <Grid item sm={3} className={classes.right}>
+                                        {`$ ${checkout.total.toFixed(2)}`}
                                     </Grid>
                                 </Grid>
                                 <Button variant="contained" color="primary" className={classes.checkoutBtn}>
