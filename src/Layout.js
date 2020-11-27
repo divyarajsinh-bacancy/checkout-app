@@ -1,7 +1,5 @@
 import React,{ useState } from "react";
 import Button from "@material-ui/core/Button";
-import Container from "@material-ui/core/Container";
-import Box from "@material-ui/core/Box";
 import TextField from "@material-ui/core/TextField";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from '@material-ui/core/MenuItem';
@@ -11,6 +9,9 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import RemoveIcon from '@material-ui/icons/Remove';
 import { db } from "./db";
 
 const ITEM = 'item',QTY = 'quantity',PRICE = 'price',ADD = 'add',DELETE = 'delete';
@@ -23,19 +24,70 @@ const initialError = {
     total:false,
     index:-1
 };
+const useStyles = makeStyles((theme) => ({
+    container: {
+      background: 'white',
+    },
+    productItem: {
+      marginRight: theme.spacing(1),
+    },
+    iconContainer: {
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    removeIcon: {
+      background: 'red',
+      borderRadius: '50%',
+      color: 'white',
+    },
+    formControl: {
+      width: '100%',
+    },
+    error: {
+      color: 'red',
+    },
+    card: {
+      background: '#F5F5F5',
+      boxShadow: 'none',
+    },
+    right: {
+      textAlign: 'right',
+      marginRight: theme.spacing(1),
+    },
+    checkoutBtn: {
+      marginTop: theme.spacing(3),
+      width: '100%',
+    },
+    button: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+        width: '100%',
+    },
+    noItem: {
+        marginBottom: theme.spacing(2),
+    },
+    pb2:{
+        marginBottom: theme.spacing(2), 
+    }
+  }));
 
 const Layout = () => {
-
+    const classes = useStyles();
     const [card,setCard] = useState(null);
     const [products,setProducts] = useState([]);
     const [checkout,setCheckout] = useState(initialTotal);
     const [error,setError] = useState(initialError);
+    const [render,setRender] = useState(false);
 
     const handleCardNumber = e => {
         const value = +e.target.value;
         const result = db.find(ele => ele.number === value);
         if(result){
             setCard(result);
+            setRender(true);
+        }else{
+            setRender(false);
         }
     }
 
@@ -87,75 +139,116 @@ const Layout = () => {
     }
 
     const addDeleteProduct = (type,index) => {
-        if(type === ADD){
-            const obj = {
-                id:'',
-                name:'',
-                quantity:1,
-                price:''
+        if(card){
+            if(type === ADD){
+                const obj = {
+                    id:'',
+                    name:'',
+                    quantity:1,
+                    price:''
+                }
+                setProducts([...products,obj]);
+            }else if(type === DELETE){
+                let arr = [...products];
+                arr.splice(index,1);
+                setProducts([...arr]);
+                setTotal(arr);
             }
-            setProducts([...products,obj]);
-        }else if(type === DELETE){
-            let arr = [...products];
-            arr.splice(index,1);
-            setProducts([...arr]);
-            setTotal(arr);
         }
     }
 
     return(
-        <Container>
-            <Box>
-                <TextField id="card" label="Card Number" onChange={handleCardNumber}/>
-            </Box>
-            <h2>Purchase</h2>
-            {products && products.map((product,key) => {
-                return( card && <Box>
-                    <FormControl>
-                    <InputLabel id={`select-product-${key}`}>Product</InputLabel>
-                    <Select labelId={`select-product-${key}`} id={`product-${key}`} value={product.id} onChange={(e) => handleProduct(ITEM,e.target.value,key)}>
-                        {card.allowedProducts.map((item,i) => 
-                            <MenuItem value={item.id}>{item.name}</MenuItem>
-                        )}
-                    </Select>
-                    </FormControl>
-                    <FormControl>
-                    <TextField id={`qty-${key}`} label="Qty/Litre" onChange={(e) => handleProduct(QTY,e.target.value,key)} value={product.quantity} onBlur={(e) => handleBlur(key)}/>
-                    </FormControl>
-                    <FormControl error>
-                    <TextField id={`price-${key}`} label="Unit Price/$" onChange={(e) => handleProduct(PRICE,e.target.value,key)} value={product.price} onBlur={(e) => handleBlur(key)}/>
-                    {error.price && (error.index === key ? <FormHelperText>{`Unit Price should be between ${product.minPriceCents/100} and ${product.maxPriceCents/100}`}</FormHelperText> : '')}
-                    </FormControl>
-                    
-                    {key !== 0  ? <Button className="primary" onClick={() => addDeleteProduct(DELETE,key)}>Delete</Button> : ''}             
-                </Box> )
-            })}
-            <Button className="primary" onClick={() => addDeleteProduct(ADD,0)}>Add Product</Button>
-            <h2>Checkout</h2>
-            { card && <Box>
-                <h4>Subtotal (${checkout.subtotal})</h4>
-                {products && products.map((product,key) => {
-                    return( card && <Card className="checkout" key={`checkout-product-${key}`}>
-                        <CardContent>
-                        <Typography color="textSecondary">
-                            {product.name}
-                        </Typography>
-                        <Typography variant="h5" component="h2">
-                            {`($ ${product.price}/L)`}
-                        </Typography>
-                        {
-                            product.discountCentsPerLitre && 
-                            <Typography variant="h5" component="p">
-                                {`- $ ${product.discountCentsPerLitre/100}`}
-                            </Typography>
-                        }
-                        </CardContent>
-                    </Card> )
-                })}
-                {error.total && <Typography variant="h5" component="p">{`Total Price should be less than ${card.balance}`}</Typography>}
-                <h4>Total (${checkout.total})</h4>
-            </Box> }
-        </Container>
+        <Grid container direction="row" justify="center" alignItems="center" color="primary" className="main-container">
+            <Grid item md={6} xs={12} sm={12}>
+                <Card>
+                    <CardContent>
+                        <Card className={classes.pb2}>
+                            <CardContent>
+                                <TextField id="card" label="Card Number" required onChange={handleCardNumber}/>
+                            </CardContent>
+                        </Card>
+                        <Card className={classes.pb2}>
+                            <CardContent>
+                                <div>
+                                    <h2 className="text-primary">Purchase</h2>
+                                </div>
+                                {render && <div>
+                                    {products && products.map((product,key) => {
+                                        return( card && 
+                                        <Grid container className={classes.container} key={`grid-${key}`}>
+                                            <Grid item md={4} xs={12} sm={12} className={classes.productItem}>
+                                                <FormControl className={classes.formControl}>
+                                                    <InputLabel id={`select-product-${key}`}>Product</InputLabel>
+                                                    <Select labelId={`select-product-${key}`} id={`product-${key}`} value={product.id} onChange={(e) => handleProduct(ITEM,e.target.value,key)}>
+                                                        {card.allowedProducts.map((item,i) => 
+                                                            <MenuItem value={item.id} key={`menuitem-${i}`}>{item.name}</MenuItem>
+                                                        )}
+                                                    </Select>
+                                                </FormControl>
+                                            </Grid>
+                                            <Grid item md={3} xs={12} sm={12} className={classes.productItem}>
+                                                <TextField id={`qty-${key}`} label="Qty/Litre" onChange={(e) => handleProduct(QTY,e.target.value,key)} value={product.quantity} onBlur={(e) => handleBlur(key)}/>
+                                            </Grid>
+                                            <Grid item md={3} xs={12} sm={12} className={classes.productItem}>
+                                                <TextField id={`price-${key}`} label="Unit Price/$" onChange={(e) => handleProduct(PRICE,e.target.value,key)} value={product.price} onBlur={(e) => handleBlur(key)}/>
+                                                {error.price && (error.index === key ? <FormHelperText className={classes.error}>{`Unit Price should be between ${product.minPriceCents/100} and ${product.maxPriceCents/100}`}</FormHelperText> : '')}
+                                            </Grid>
+                                            <Grid item md={1} xs={12} sm={12} className={classes.iconContainer}>
+                                                <RemoveIcon className={classes.removeIcon} onClick={() => addDeleteProduct(DELETE,key)} />
+                                            </Grid>
+                                        </Grid> )
+                                    })}
+                                    <Button variant="outlined" color="primary" className={classes.button} onClick={() => addDeleteProduct(ADD,0)}>Add Product</Button>
+                                </div> }
+                                {!render && <div className={classes.noItem}>Please Enter valid Card number</div>}
+                            </CardContent>
+                        </Card>
+                        <Card className={classes.card,classes.pb2}>
+                            <CardContent>
+                                <Typography variant="h4" className="text-primary">
+                                    Checkout
+                                </Typography>
+                                <Grid container className={classes.container}>
+                                    <Grid item sm={8}>
+                                        SubTotal
+                                    </Grid>
+                                    <Grid item sm={3} className={classes.right}>
+                                        {`$ ${checkout.subtotal}`}
+                                    </Grid>
+                                    {products &&
+                                        products.map((product) => {
+                                        return (
+                                            product.discountCentsPerLitre && (
+                                            <>
+                                                <Grid item sm={8}>
+                                                {product.name}
+                                                </Grid>
+                                                <Grid item sm={3} className={classes.right}>
+                                                {`- $ ${product.discountCentsPerLitre / 100}`}
+                                                </Grid>
+                                            </>
+                                            )
+                                        );
+                                        })}
+                                    <Grid item sm={8}>
+                                        Total to Tendet
+                                    </Grid>
+                                    <Grid item sm={3} className={classes.right}>
+                                        {`$ ${checkout.total}`}
+                                    </Grid>
+                                </Grid>
+                                <Button variant="contained" color="primary" className={classes.checkoutBtn}>
+                                PROCESS NOW
+                                </Button>
+                                <FormHelperText className={classes.error}>
+                                {error.total ? 'Total is greater than card balence' : ''}
+                                </FormHelperText>
+                            </CardContent>
+                        </Card>
+                    </CardContent>
+                </Card>
+            </Grid>
+        </Grid>
     )
 }
 
